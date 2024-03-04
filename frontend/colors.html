@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colors</title>
+</head>
+<body>
+{% for color in colors %}
+    <h1>{{color['color']}}</h1>
+    <h2>{{color['name']}}</h2>
+    <h3>{{color['type']}}</h3>
+    <h3>{{color['status']}}</h3>
+{% endfor %}
+</body>
+</html>
