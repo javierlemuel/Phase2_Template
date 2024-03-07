@@ -1,3 +1,5 @@
+from functools import wraps
+
 from flask import Flask, render_template, redirect, request, session
 import pymysql
 from frontend_controller.cartController import *
@@ -16,6 +18,15 @@ app.secret_key = 'akeythatissecret'
 # Every controller accesses its relevant model and will send the information back to this Flask app
 # LOGIN INFO:
     # javier.quinones3@upr.edu (pass1234)
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'customer' not in session:
+            session['request'] = request.url
+            return redirect(url_for('enterpage', message='mustlogin'))  # Redirect to login page if session variable is not set
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Redirects us here if no url is given
@@ -45,7 +56,12 @@ def change():
 @app.route("/clear")
 def clear():
     # Whenever you wish to log out or clear the session info, you can type /clear at the end of the Flask address
-    session.clear()
+    if 'customer' in session:
+        session.pop('customer')
+
+    if 'request' in session:
+        session.pop('request')
+
     return redirect("/")
 
 
@@ -117,6 +133,7 @@ def shop():
 
 
 @app.route("/profile")
+@login_required
 def profile():
     # To open the user's profile page
     # Get user info from getUser() in profileController
@@ -184,12 +201,14 @@ def editinfo():
 
 
 @app.route("/password")
+@login_required
 def password():
     # TO BE CONNECTED TO MYSQL BY STUDENTS
     return render_template("change-password.html")
 
 
 @app.route("/orders")
+@login_required
 def orders():
     # TO BE CONNECTED TO MYSQL BY STUDENTS
     # Redirects us to the orders list page of the user
@@ -242,22 +261,15 @@ def editcart():
 
 @app.route("/checkout/", defaults={'message': None})
 @app.route("/checkout/<message>")
+@login_required
 def checkout(message):
-    # Check if customer is logged in
-    if 'customer' in session:
-        # > profileController
-        user = getUser()
-        ship = getAddress(session['customer'])
-        method = getpaymentcontroller()
+    # > profileController
+    user = getUser()
+    ship = getAddress(session['customer'])
+    method = getpaymentcontroller()
 
-        return render_template("checkout.html", user=user, message=message,
-                               shipping_addresses=ship, payment_methods=method)
-
-    else:
-        # If customer isn't logged in, create session variable to tell us we're headed to checkout
-        # Redirect us to login with message
-        session['checkout'] = True
-        return redirect("/wrong")
+    return render_template("checkout.html", user=user, message=message,
+                           shipping_addresses=ship, payment_methods=method)
 
 
 @app.route("/validate", methods=["POST"])
@@ -268,6 +280,7 @@ def validate():
 
 
 @app.route("/invoice")
+@login_required
 def invoice():
     # TO BE CONNECTED TO MYSQL BY STUDENTS
     # > invoiceController

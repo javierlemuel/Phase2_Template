@@ -142,7 +142,7 @@
                     {% endfor %}
                 {% endif %}
             </ul>
-            {% if 'cart' in session %}
+            {% if 'cart' in session and session['cart'] != [] %}
             <div class="cart-footer">
                 <a class="cart-checkout-btn" href="{{url_for('checkout')}}">
                     <span class="checkout-label">Proceed to Checkout</span>
@@ -191,7 +191,7 @@
                     <div class="col-sm-6 col-xl-3">
                         <div class="footer-widget">
                             <a class="footer-logo" href="#">
-                                <img src="images/logo.png" alt="logo">
+                                <img src="/static/images/logo.png" alt="logo">
                             </a>
                             <p class="footer-desc">This e-commerce template has been created for the sole purpose of aiding the students for the Databases course</p>
 

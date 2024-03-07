@@ -11,7 +11,7 @@ def loginmodel(email, password):
     db = Dbconnect()
     sql = "SELECT c_email, c_id, c_password, c_status FROM customer WHERE c_email = %s"
     # Save user info in list
-    userFound = db.select(sql, (email))
+    userFound = db.select(sql, (email,))
 
     print(userFound)
 

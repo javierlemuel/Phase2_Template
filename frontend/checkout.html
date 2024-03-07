@@ -52,17 +52,9 @@
         =======================================-->
         {% block content %}
         <section class="inner-section checkout-part">
-            {% if message == 'address' %}
+            {% if message == 'number' %}
             <div style="text-align:center">
-                            <h2 style="color: red">Missing Address Information. Please fill out all information.</h2>
-             </div>
-            {% elif message == 'payment' %}
-            <div style="text-align:center">
-                            <h2 style="color: red">Missing Payment Information. Please fill out all information.</h2>
-             </div>
-            {% elif message == 'number' %}
-            <div style="text-align:center">
-                            <h2 style="color: red">Missing Contact Information. Please fill out all information.</h2>
+                            <h2 style="color: red">Missing Phone Number. Please fill out all information.</h2>
              </div>
             {% endif %}
             <div class="container">
@@ -216,7 +208,7 @@
                                 {% for address in shipping_addresses %}
                                 <div class="col-md-6 col-lg-4 alert fade show">
                                     <div class="profile-card address"
-                                        data-address-id="{{address['shipping_address_id']}}">
+                                        data-address-id="{{address['address_id']}}">
                                         <p>{{address['address_line_1']}}</p><br>
                                         <p>{{address['address_line_2']}}</p><br>
                                         <p>{{address['city']}}, {{address['state']}} {{address['zipcode']}}</p>
@@ -382,6 +374,7 @@
                     <button class="modal-close" data-bs-dismiss="modal"><i class="icofont-close"></i></button>
                     <form class="modal-form" action="{{url_for('editinfo')}}" method="post">
                         <input type="hidden" name="checkout" value="checkout">
+                        <input type="hidden" name="postType" value="editnumber">
                         <div class="form-title">
                             <h3>Edit contact number</h3>
                         </div>
@@ -498,15 +491,12 @@
                     <form id="checkout-form" action="{{url_for('validate')}}" method="POST">
                     <div class="row">
                         <button type="submit" class="cart-checkout-btn">
-                            <span class="checkout-label">Proceed to Checkout</span>
+                            <span class="checkout-label">Finish order</span>
                         </button>
                     </div>
                     <input type="hidden" name="shipping_address" value="">
                     <input type="hidden" name="payment_method" value="">
                 </form>
-<!--                            <div class="checkout-proced">-->
-<!--                                <a href="{{url_for('validate')}}" class="btn btn-inline">proceed to checkout</a>-->
-<!--                            </div>-->
                         </div>
                     </div>
                 </div>
@@ -528,6 +518,9 @@
                 var shippingAddress = document.querySelector('input[name="shipping_address"]').value;
                 var paymentMethod = document.querySelector('input[name="payment_method"]').value;
 
+                console.log("ship address", shippingAddress)
+                console.log("pay method", paymentMethod)
+
                 if (!shippingAddress || !paymentMethod) {
                     alert('Select shipping address and payment method before proceeding.');
                     event.preventDefault(); // stop form submission
@@ -541,7 +534,9 @@
                     var _this = this; // preserve the reference to 'this'
                     setTimeout(function () {
                         if (_this.classList.contains('active')) {
+
                             var addressId = _this.getAttribute('data-address-id');
+                            console.log("ship address id", addressId)
                             document.querySelector('input[name="shipping_address"]').value = addressId;
                         }
                     }, 100); // 100 millisecond delay
